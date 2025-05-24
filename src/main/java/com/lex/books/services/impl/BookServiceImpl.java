@@ -5,7 +5,6 @@ import com.lex.books.domain.BookEntity;
 import com.lex.books.repositories.BookRepository;
 import com.lex.books.services.BookService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
 
-    @Autowired
     public BookServiceImpl(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }

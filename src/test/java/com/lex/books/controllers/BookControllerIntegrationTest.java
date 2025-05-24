@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lex.books.domain.Book;
 import com.lex.books.services.BookService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -19,7 +17,6 @@ import static com.lex.books.TestData.testBook;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(SpringExtension.class)
 public class BookControllerIntegrationTest {
 
     @Autowired
@@ -33,7 +30,8 @@ public class BookControllerIntegrationTest {
         Book book = testBook();
         ObjectMapper objectMapper = new ObjectMapper();
         String bookJson = objectMapper.writeValueAsString(book);
-        mockMvc.perform(MockMvcRequestBuilders.put("/books/" + book.getIsbn()).content(bookJson).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/" + book.getIsbn()).content(bookJson)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
@@ -47,8 +45,10 @@ public class BookControllerIntegrationTest {
         book.setAuthor("Another name");
         ObjectMapper objectMapper = new ObjectMapper();
         String bookJson = objectMapper.writeValueAsString(book);
-        mockMvc.perform(MockMvcRequestBuilders.put("/books/" + book.getIsbn()).content(bookJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(isBookExists ? MockMvcResultMatchers.status().isOk() : MockMvcResultMatchers.status().isCreated())
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/" + book.getIsbn()).content(bookJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(isBookExists ? MockMvcResultMatchers.status().isOk()
+                        : MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.author").value(book.getAuthor()));
@@ -56,15 +56,18 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testThatRetrieveBookReturns404WhenBookNotFound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/12345688568465956")).andExpect(MockMvcResultMatchers.status().isNotFound());
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/12345688568465956"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     public void testThatRetrieveBookReturns200AndBookWhenExists() throws Exception {
         Book book = testBook();
         bookService.save(book);
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/" + book.getIsbn())).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn())).andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/" + book.getIsbn()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value(book.getIsbn()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.author").value(book.getAuthor()));
     }
 
@@ -89,7 +92,8 @@ public class BookControllerIntegrationTest {
 
     @Test
     public void testThatHttp204IsReturnedWhenBookDoesntExist() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/books/" + ISBN)).andExpect(MockMvcResultMatchers.status().isNoContent());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/" + ISBN))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
